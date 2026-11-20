@@ -1,0 +1,31 @@
+services:
+  broker:
+    image: rabbitmq:4-alpine
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile.producer
+    environment:
+      BROKER_HOST: broker
+      QUEUE_NAME: tasks
+      TASK_INTERVAL: 1
+    depends_on:
+      broker:
+        condition: service_healthy
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      BROKER_HOST: broker
+      QUEUE_NAME: tasks
+      PROCESSING_TIME: 1
+    depends_on:
+      broker:
+        condition: service_healthy

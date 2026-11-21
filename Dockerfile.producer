@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY producer.py .
 
+STOPSIGNAL SIGTERM
+
 CMD ["python", "-u", "producer.py"]
